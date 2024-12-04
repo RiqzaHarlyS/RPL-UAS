@@ -289,6 +289,13 @@
         document.getElementById("sidebar-overlay").addEventListener("click", function () {
             toggleSidebar();
         });
+
+        document.querySelector('.logout-btn').addEventListener('click', function() {
+        // Hapus status login
+        localStorage.removeItem('isLoggedIn');
+        // Redirect ke halaman login
+        window.location.href = "login.html";
+    });
     </script>
 </body>
 </html>
