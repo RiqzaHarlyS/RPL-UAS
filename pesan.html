@@ -110,17 +110,17 @@
     </footer>
     <script>
         let cartItems = [];
-
+    
         function updateCartButton() {
             const keranjangBtn = document.querySelector('.keranjang-btn');
             const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
             keranjangBtn.textContent = `Keranjang (${totalItems})`;
         }
-
+    
         function updatePopupContent() {
             const popupContent = document.querySelector('.popup-content');
             popupContent.innerHTML = '';
-
+    
             const uniqueItems = {};
             cartItems.forEach(item => {
                 if (uniqueItems[item.name]) {
@@ -129,11 +129,11 @@
                     uniqueItems[item.name] = { ...item };
                 }
             });
-
+    
             Object.values(uniqueItems).forEach((item, index) => {
                 const itemElement = document.createElement('div');
                 itemElement.classList.add('popup-item');
-
+    
                 itemElement.innerHTML = `
                     <div class="item-info">
                         <h4>${item.name}</h4>
@@ -145,14 +145,14 @@
                         <button class="quantity-btn plus-btn" data-name="${item.name}">+</button>
                     </div>
                 `;
-
+    
                 popupContent.appendChild(itemElement);
             });
-
+    
             updateTotalPrice();
             updateCartButton();
         }
-
+    
         function increaseQuantity(name) {
             const itemIndex = cartItems.findIndex(item => item.name === name);
             if (itemIndex !== -1) {
@@ -160,7 +160,7 @@
                 updatePopupContent();
             }
         }
-
+    
         function decreaseQuantity(name) {
             const itemIndex = cartItems.findIndex(item => item.name === name);
             if (itemIndex !== -1) {
@@ -172,22 +172,22 @@
                 updatePopupContent();
             }
         }
-
+    
         function updateTotalPrice() {
             const totalPrice = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
             document.querySelector('.total-price').textContent = `Total: Rp ${totalPrice.toLocaleString('id-ID')}`;
         }
-
+    
         const produkButtons = document.querySelectorAll('.produk-button');
         produkButtons.forEach((button) => {
             button.addEventListener('click', () => {
                 const name = button.parentNode.querySelector('h3').textContent;
                 const price = parseInt(button.parentNode.querySelector('p:nth-of-type(2)').textContent.replace('Rp.', '').replace(/\./g, ''));
-
+    
                 // Ambil data produk dari localStorage
                 const products = JSON.parse(localStorage.getItem('products'));
                 const product = products.find(p => p.name === name);
-
+    
                 // Periksa stok
                 if (product && product.stock > 0) {
                     const existingItemIndex = cartItems.findIndex(item => item.name === name);
@@ -196,28 +196,28 @@
                     } else {
                         cartItems.push({ name, price, quantity: 1 });
                     }
-
+    
                     // Kurangi stok produk
                     product.stock--;
                     localStorage.setItem('products', JSON.stringify(products)); // Simpan kembali ke localStorage
-
+    
                     updateCartButton();
                 } else {
                     alert('Produk habis!'); // Beri tahu pengguna bahwa produk habis
                 }
             });
         });
-
+    
         document.querySelector('.keranjang-btn').addEventListener('click', showPopup);
         document.querySelector('.close-popup').addEventListener('click', hidePopup);
         document.querySelector('.checkout-btn').addEventListener('click', () => {
             // Save cart items to localStorage
-            localStorage.setItem('cartItems', JSON.stringify(cartItems));
+            localStorage.setItem('cartItems', JSON.stringify(cartItems));  <!-- *perubahan disini* -->
             // Redirect to checkout page
             window.location.href = 'checkout.html';
             hidePopup();
         });
-
+    
         document.querySelector('.popup-content').addEventListener('click', (event) => {
             if (event.target.classList.contains('plus-btn')) {
                 increaseQuantity(event.target.dataset.name);
@@ -225,22 +225,23 @@
                 decreaseQuantity(event.target.dataset.name);
             }
         });
-
+    
         function showPopup() {
             updatePopupContent();
             document.querySelector('.popup-overlay').style.display = 'flex';
         }
-
+    
         function hidePopup() {
             document.querySelector('.popup-overlay').style.display = 'none';
         }
-
-        // JavaScript for login button and dropdown
+    
+        // **Penghapusan pengaruh login pada keranjang**: Sekarang pengguna bisa menambahkan produk ke keranjang tanpa login
+        // JavaScript for dropdown
         document.querySelector('.dropdown-btn').addEventListener('click', function(event) {
             event.stopPropagation();
             document.querySelector('.dropdown-content').classList.toggle('show');
         });
-
+    
         document.addEventListener('click', function(event) {
             if (!event.target.matches('.dropdown-btn')) {
                 const dropdowns = document.getElementsByClassName('dropdown-content');
@@ -251,8 +252,8 @@
                 }
             }
         });
-
-        // Login button click handler
+    
+        // **Tombol login hanya untuk mengarahkan ke halaman login atau dashboard, tanpa mengganggu keranjang**
         document.querySelector('.login-btn').addEventListener('click', function() {
             const isLoggedIn = localStorage.getItem('isLoggedIn');
             if (isLoggedIn === 'true') {
